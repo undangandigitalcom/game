@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { Particle, FloatingText } from './types';
 
 export function useFX() {
@@ -7,7 +7,7 @@ export function useFX() {
   const shakeFramesRef = useRef<number>(0);
   const shakePowerRef = useRef<number>(0);
 
-  const burst = (x: number, y: number, color = '#facc15', count = 14) => {
+  const burst = useCallback((x: number, y: number, color = '#facc15', count = 14) => {
     for (let i = 0; i < count; i++) {
       const angle = (Math.PI * 2 * i) / count + Math.random() * 0.4;
       const speed = 1.5 + Math.random() * 3.8;
@@ -23,9 +23,9 @@ export function useFX() {
         gravity: 0.14
       });
     }
-  };
+  }, []);
 
-  const dust = (x: number, y: number, color = 'rgba(255,255,255,0.75)') => {
+  const dust = useCallback((x: number, y: number, color = 'rgba(255,255,255,0.75)') => {
     for (let i = 0; i < 6; i++) {
       particlesRef.current.push({
         x: x + (Math.random() - 0.5) * 14,
@@ -39,27 +39,27 @@ export function useFX() {
         gravity: 0.03
       });
     }
-  };
+  }, []);
 
-  const floatText = (x: number, y: number, text: string, color = '#fef08a') => {
+  const floatText = useCallback((x: number, y: number, text: string, color = '#fef08a') => {
     textsRef.current.push({ x, y, text, color, life: 40, maxLife: 40 });
-  };
+  }, []);
 
-  const shake = (power = 6, frames = 12) => {
+  const shake = useCallback((power = 6, frames = 12) => {
     shakePowerRef.current = power;
     shakeFramesRef.current = frames;
-  };
+  }, []);
 
-  const applyShake = (ctx: CanvasRenderingContext2D) => {
+  const applyShake = useCallback((ctx: CanvasRenderingContext2D) => {
     if (shakeFramesRef.current > 0) {
       shakeFramesRef.current--;
       const dx = (Math.random() - 0.5) * shakePowerRef.current * 2;
       const dy = (Math.random() - 0.5) * shakePowerRef.current * 2;
       ctx.translate(dx, dy);
     }
-  };
+  }, []);
 
-  const updateAndDraw = (ctx: CanvasRenderingContext2D) => {
+  const updateAndDraw = useCallback((ctx: CanvasRenderingContext2D) => {
     const particles = particlesRef.current;
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
@@ -100,7 +100,10 @@ export function useFX() {
       ctx.fillText(t.text, t.x, t.y);
       ctx.restore();
     }
-  };
+  }, []);
 
-  return { burst, dust, floatText, shake, applyShake, updateAndDraw };
+  return useMemo(
+    () => ({ burst, dust, floatText, shake, applyShake, updateAndDraw }),
+    [burst, dust, floatText, shake, applyShake, updateAndDraw]
+  );
 }

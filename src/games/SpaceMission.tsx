@@ -34,6 +34,7 @@ export const SpaceMission: React.FC<GameProps> = ({ difficulty, targetGoal, onWi
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    gameState.current.running = true;
 
     let animId: number;
 

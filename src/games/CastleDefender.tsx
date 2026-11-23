@@ -47,6 +47,7 @@ export const CastleDefender: React.FC<GameProps> = ({ difficulty, onWin }) => {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    gameState.current.running = true;
 
     let animId: number;
 

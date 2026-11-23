@@ -54,6 +54,7 @@ export const SuperPlatformer: React.FC<GameProps> = ({ difficulty, targetGoal, o
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    gameState.current.running = true;
 
     let animId: number;
 
